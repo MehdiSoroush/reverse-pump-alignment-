@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 
+st.set_page_config(page_title="Reverse Dial Alignment", layout="wide")
+
 st.title("🔧 Reverse Dial Alignment Calculator")
 
 st.markdown("Enter your dial indicator readings and machine distances below:")
@@ -49,48 +51,37 @@ results = {
     "Correction_Front_Horizontal": Correction_Front_Horizontal,
     "Correction_Rear_Horizontal": Correction_Rear_Horizontal
 }
-
 df = pd.DataFrame(results.items(), columns=["Parameter", "Value"])
-st.subheader("📊 Results")
-st.dataframe(df)
 
-# Download option
-st.download_button(
-    "Download results as CSV",
-    df.to_csv(index=False),
-    "alignment_results.csv",
-    "text/csv"
-)
+# --- Layout with two columns ---
+col1, col2 = st.columns([1.3, 2])  # first narrower for results, second wider for legend
 
-# --- Legend / Explanations ---
-st.subheader("📖 Legend: What Each Parameter Means")
+with col1:
+    st.subheader("📊 Results")
+    st.dataframe(df, use_container_width=True)
+    st.download_button(
+        "⬇️ Download results (CSV)",
+        df.to_csv(index=False),
+        "alignment_results.csv",
+        "text/csv"
+    )
 
-legend = {
-    "A12": "Dial A at 12 o’clock (top) position",
-    "A6": "Dial A at 6 o’clock (bottom) position",
-    "B12": "Dial B at 12 o’clock (top) position",
-    "B6": "Dial B at 6 o’clock (bottom) position",
-    "A9": "Dial A at 9 o’clock (left side)",
-    "A3": "Dial A at 3 o’clock (right side)",
-    "B9": "Dial B at 9 o’clock (left side)",
-    "B3": "Dial B at 3 o’clock (right side)",
-    "D1": "Span between the two indicators (A to B)",
-    "D2": "Distance from near dial to coupling center",
-    "D3": "Distance from coupling center to front feet",
-    "D4": "Distance from front feet to rear feet",
-    "ΔA_vertical": "Difference in A readings top vs bottom",
-    "ΔB_vertical": "Difference in B readings top vs bottom",
-    "Angular_Vertical": "Slope of vertical misalignment (mm/mm)",
-    "Offset_Vertical": "Vertical offset at coupling center",
-    "Correction_Front_Vertical": "Shim/slide needed at front feet (vertical)",
-    "Correction_Rear_Vertical": "Shim/slide needed at rear feet (vertical)",
-    "ΔA_horizontal": "Difference in A readings left vs right",
-    "ΔB_horizontal": "Difference in B readings left vs right",
-    "Angular_Horizontal": "Slope of horizontal misalignment (mm/mm)",
-    "Offset_Horizontal": "Horizontal offset at coupling center",
-    "Correction_Front_Horizontal": "Shim/slide needed at front feet (horizontal)",
-    "Correction_Rear_Horizontal": "Shim/slide needed at rear feet (horizontal)"
-}
-
-for key, desc in legend.items():
-    st.markdown(f"**{key}** → {desc}")
+with col2:
+    st.subheader("📖 Legend (What each parameter means)")
+    legend = {
+        "ΔA_vertical": "Difference in A readings (top vs bottom)",
+        "ΔB_vertical": "Difference in B readings (top vs bottom)",
+        "Angular_Vertical": "Slope of vertical misalignment (mm/mm)",
+        "Offset_Vertical": "Vertical offset at coupling center",
+        "Correction_Front_Vertical": "Shim/slide needed at front feet (vertical)",
+        "Correction_Rear_Vertical": "Shim/slide needed at rear feet (vertical)",
+        "ΔA_horizontal": "Difference in A readings (left vs right)",
+        "ΔB_horizontal": "Difference in B readings (left vs right)",
+        "Angular_Horizontal": "Slope of horizontal misalignment (mm/mm)",
+        "Offset_Horizontal": "Horizontal offset at coupling center",
+        "Correction_Front_Horizontal": "Shim/slide needed at front feet (horizontal)",
+        "Correction_Rear_Horizontal": "Shim/slide needed at rear feet (horizontal)"
+    }
+    # Pretty list style
+    for key, desc in legend.items():
+        st.markdown(f"**{key}** → {desc}")
