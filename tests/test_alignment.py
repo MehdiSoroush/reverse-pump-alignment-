@@ -117,3 +117,32 @@ def test_default_geometry_is_not_forced():
     slope = (.6 - .2) / (2 * 200)
     offset = .6 / 2 - slope * 50
     assert a.vertical.front_move_mm == pytest.approx(slope * 300 - offset)
+
+
+def test_pure_horizontal_angularity_through_coupling():
+    # Four-position inputs have S9-S3=.08 and M9-M3=.12.
+    s = Dial(top=0, right=-.08, bottom=-.08, left=0)
+    m = Dial(top=0, right=-.12, bottom=-.12, left=0)
+    a = calculate(s, m, G)
+    assert a.closure_ok
+    assert a.horizontal.offset_mm == pytest.approx(0)
+    assert a.horizontal.slope_mm_per_mm == pytest.approx(.001)
+    assert a.horizontal.front_move_mm == pytest.approx(.2)
+    assert a.horizontal.rear_move_mm == pytest.approx(.6)
+
+
+def test_parallel_and_angular_components_both_reach_feet():
+    a = calculate(d(bottom=.3), d(bottom=.1), G).vertical
+    assert a.slope_mm_per_mm == pytest.approx(.002)
+    assert a.offset_mm == pytest.approx(.07)
+    assert a.front_move_mm == pytest.approx(.33)
+    assert a.rear_move_mm == pytest.approx(1.13)
+
+
+def test_reversing_all_dial_signs_reverses_all_moves():
+    s, m = d(bottom=.3), d(bottom=.1)
+    plus = calculate(s, m, G).vertical
+    negative = calculate(Dial(-s.top, -s.right, -s.bottom, -s.left),
+                         Dial(-m.top, -m.right, -m.bottom, -m.left), G).vertical
+    assert negative.front_move_mm == pytest.approx(-plus.front_move_mm)
+    assert negative.rear_move_mm == pytest.approx(-plus.rear_move_mm)
