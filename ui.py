@@ -155,8 +155,39 @@ def render() -> None:
                "structural analysis. At each foot, the proposed move is the negative "
                "of the plotted relative offset.")
 
-    st.download_button("Download results as CSV", data=summary.to_csv(index=False),
-                       file_name="reverse_dial_alignment_results.csv", mime="text/csv")
+    # A measurement record must include the inputs and screening results, not
+    # only the calculated foot moves; retain provenance for repeat checks.
+    fields = [
+        ("S 12", s.top, "mm"), ("S 3", s.right, "mm"),
+        ("S 6", s.bottom, "mm"), ("S 9", s.left, "mm"),
+        ("M 12", m.top, "mm"), ("M 3", m.right, "mm"),
+        ("M 6", m.bottom, "mm"), ("M 9", m.left, "mm"),
+        ("Indicator span D", span, "mm"),
+        ("S to coupling C", coupling, "mm"),
+        ("Coupling to front feet", front, "mm"),
+        ("Coupling to rear feet", rear, "mm"),
+        ("S sag contribution", sag_s, "mm"),
+        ("M sag contribution", sag_m, "mm"),
+        ("Dial closure screening limit", closure_limit, "mm"),
+        ("S closure error", result.s_closure_mm, "mm"),
+        ("M closure error", result.m_closure_mm, "mm"),
+        ("Vertical coupling offset", result.vertical.offset_mm, "mm"),
+        ("Vertical angularity", result.vertical.slope_mm_per_mm * 100, "mm/100 mm"),
+        ("Vertical front correction", result.vertical.front_move_mm, "mm"),
+        ("Vertical rear correction", result.vertical.rear_move_mm, "mm"),
+        ("Horizontal coupling offset", result.horizontal.offset_mm, "mm"),
+        ("Horizontal angularity", result.horizontal.slope_mm_per_mm * 100, "mm/100 mm"),
+        ("Horizontal front correction", result.horizontal.front_move_mm, "mm"),
+        ("Horizontal rear correction", result.horizontal.rear_move_mm, "mm"),
+    ]
+    record = pd.DataFrame(fields, columns=["Quantity", "Value", "Unit"])
+    st.download_button("Download complete measurement and result record (CSV)",
+                       data=record.to_csv(index=False),
+                       file_name="reverse_dial_alignment_measurement_record.csv",
+                       mime="text/csv")
+    st.caption("CSV includes the entered readings, geometry, sag, closure errors "
+               "and calculated moves. Record the equipment ID, date, method "
+               "and technician identity separately in the maintenance record.")
     st.markdown("**Before any field correction:** check soft foot, machine constraints, "
                 "shaft runout, bracket sag, pipe strain and applicable running/cold targets; "
                 "make a controlled move, torque bolts, then remeasure. "
