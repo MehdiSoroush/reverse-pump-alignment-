@@ -15,7 +15,7 @@ A reproducible, independently testable **reverse-dial indicator shaft-alignment 
 - Projects **both** parallel offset and angle to front and rear machine feet, for shim and lateral correction.
 - Checks four-position dial closure, measurement geometry, and completion of measurement confirmations before showing foot moves.
 - Displays a centreline graph and exports a results CSV.
-- Includes a separate computation module and **17 unit tests** covering analytical and failure cases.
+- Includes a separate computation module and **20 unit tests** covering analytical and failure cases.
 
 ## Run locally
 
